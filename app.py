@@ -18,7 +18,7 @@ from datetime import datetime
 from statistics import mean
 from flask import Flask, render_template, request, session, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
-from PIL import Image, ImageFilter, ImageEnhance, ImageOps
+from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageStat
 import pytesseract
 import cv2
 import numpy as np
@@ -4548,6 +4548,8 @@ def improved_ocr(image):
 @app.route("/scan", methods=["POST"])
 def scan():
     try:
+        print("SCAN 1: request received", flush=True)
+
         if "image" not in request.files:
             return "No image uploaded. Please select an image.", 400
 
@@ -4556,33 +4558,63 @@ def scan():
         if image_file.filename == "":
             return "No image selected. Please choose an image.", 400
 
+        print(
+            f"SCAN 2: image received: {image_file.filename}",
+            flush=True
+        )
+
         image = Image.open(image_file)
 
+        print(
+            f"SCAN 3: image opened: {image.size}",
+            flush=True
+        )
+
         ocr_data, ocr_text, processed_image = improved_ocr(image)
+
+        print(
+            "SCAN 4: OCR completed",
+            flush=True
+        )
 
         cleaned_text = ocr_text.strip()
 
         if not cleaned_text:
             cleaned_text = "No readable text was detected."
 
+        print(
+            "SCAN 5: starting compliance check",
+            flush=True
+        )
+
         compliance_results, summary = check_compliance(
             ocr_text,
             ocr_data,
             image
         )
+
+        print(
+            "SCAN 6: compliance check completed",
+            flush=True
+        )
+
         session["compliance_results"] = compliance_results
         session["summary"] = summary
         session["extracted_text"] = cleaned_text
 
-        manual_review = any(
-            result["status"] == "Manual Review Required"
-            for result in compliance_results
+        print(
+            "SCAN 7: session saved",
+            flush=True
         )
 
         return redirect(url_for("dashboard"))
 
     except Exception as e:
-        print("Scanning error:", str(e))
+        print(
+            f"SCAN ERROR: {type(e).__name__}: {e}",
+            flush=True
+        )
+
         return f"Scanning failed: {str(e)}", 500
 
 @app.route("/dashboard")
