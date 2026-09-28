@@ -1,0 +1,1838 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Legal Metrology | Compliance Scanner</title>
+
+    <style>
+        /* =====================================================
+           GLOBAL
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef4ff 0%,
+                    #f8fafc 45%,
+                    #eaf2ff 100%
+                );
+            color: #172554;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
+
+        .navbar {
+            background: linear-gradient(
+                135deg,
+                #0f172a,
+                #172554
+            );
+
+            color: white;
+            min-height: 76px;
+            padding: 16px 6%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+            flex-wrap: wrap;
+
+            box-shadow:
+                0 6px 20px rgba(15, 23, 42, 0.18);
+        }
+
+        .upload-area {
+    border: 2px dashed #60a5fa;
+    border-radius: 16px;
+    padding: 35px 25px;
+    text-align: center;
+    background: #eff6ff;
+    transition: all 0.25s ease;
+}
+
+.upload-area.drag-active {
+    border-color: #2563eb;
+    background: #dbeafe;
+    transform: scale(1.01);
+}
+
+.upload-icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.upload-area h3 {
+    color: #1e3a8a;
+    margin-bottom: 8px;
+}
+
+.upload-area p {
+    color: #475569;
+    margin-bottom: 18px;
+}
+
+.file-upload {
+    margin-bottom: 20px;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.file-button {
+    display: inline-block;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.file-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+#file-name {
+    margin-top: 12px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.preview-wrap {
+    margin: 20px auto;
+    display: none;
+}
+
+#image-preview {
+    max-width: 350px;
+    max-height: 300px;
+    border-radius: 12px;
+    border: 1px solid #dbeafe;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.10);
+}
+
+.primary-button {
+    display: block;
+    margin: 20px auto 0;
+    border: none;
+    border-radius: 9px;
+    padding: 13px 22px;
+    background: #2563eb;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.primary-button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.primary-button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Scan processing panel */
+
+.scan-status {
+    display: none;
+    margin-top: 25px;
+    padding: 24px;
+    background: #f8fafc;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    text-align: left;
+}
+
+.scan-status-title {
+    text-align: center;
+    color: #1e3a8a;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 22px;
+}
+
+.scan-process {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.process-step {
+    flex: 1;
+    text-align: center;
+    color: #94a3b8;
+    position: relative;
+}
+
+.process-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.process-name {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.process-line {
+    flex: 0.5;
+    height: 3px;
+    background: #e2e8f0;
+    margin-top: 23px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.process-step.active {
+    color: #2563eb;
+}
+
+.process-step.active .process-icon {
+    background: #dbeafe;
+    color: #2563eb;
+    border: 2px solid #2563eb;
+    animation: processPulse 1.2s infinite;
+}
+
+.process-step.completed {
+    color: #16a34a;
+}
+
+.process-step.completed .process-icon {
+    background: #dcfce7;
+    color: #16a34a;
+    border: 2px solid #16a34a;
+}
+
+.process-line.completed {
+    background: #16a34a;
+}
+
+@keyframes processPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.35);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+    }
+}
+
+@media (max-width: 700px) {
+    .scan-process {
+        gap: 4px;
+    }
+
+    .process-line {
+        flex: 0.25;
+    }
+
+    .process-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 17px;
+    }
+
+    .process-name {
+        font-size: 10px;
+    }
+}
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(96, 165, 250, 0.16);
+            border: 1px solid rgba(147, 197, 253, 0.25);
+
+            font-size: 21px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+        }
+
+        .brand span {
+            color: #60a5fa;
+        }
+
+        .nav-subtitle {
+            color: #cbd5e1;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .nav-right {
+            color: #bfdbfe;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 13px;
+
+            border: 1px solid rgba(147, 197, 253, 0.22);
+            border-radius: 20px;
+
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* =====================================================
+           MAIN CONTAINER
+        ===================================================== */
+
+        .container {
+            width: 90%;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 42px 0 30px;
+        }
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+            text-align: center;
+            margin-bottom: 34px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+
+            padding: 7px 14px;
+            margin-bottom: 15px;
+
+            background: #dbeafe;
+            color: #1d4ed8;
+
+            border: 1px solid #bfdbfe;
+            border-radius: 20px;
+
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            color: #0f172a;
+            font-size: 39px;
+            line-height: 1.15;
+            margin-bottom: 13px;
+            font-weight: 800;
+        }
+
+        .hero h1 span {
+            color: #2563eb;
+        }
+
+        .hero p {
+            max-width: 720px;
+            margin: auto;
+
+            color: #475569;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* =====================================================
+           COMMON CARD
+        ===================================================== */
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+
+            border: 1px solid #dbeafe;
+            border-radius: 20px;
+
+            box-shadow:
+                0 12px 35px rgba(15, 23, 42, 0.08);
+
+            margin-bottom: 26px;
+        }
+
+        .card-header {
+            padding: 23px 28px 16px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .card-title {
+            color: #172554;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .card-subtitle {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .card-body {
+            padding: 0 28px 28px;
+        }
+
+        /* =====================================================
+           UPLOAD SECTION
+        ===================================================== */
+
+        .upload-card {
+            overflow: hidden;
+        }
+
+        .upload-area {
+            border: 2px dashed #93c5fd;
+            border-radius: 17px;
+
+            padding: 35px 22px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eff6ff,
+                    #f8fbff
+                );
+
+            transition: 0.2s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #dbeafe;
+            color: #2563eb;
+
+            font-size: 29px;
+        }
+
+        .upload-area h3 {
+            color: #1e293b;
+            font-size: 18px;
+            margin-bottom: 7px;
+        }
+
+        .upload-area > p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 21px;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 12px 20px;
+
+            background: #2563eb;
+            color: white;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .file-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        #file-name {
+            margin-top: 11px;
+            color: #64748b;
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+        /* =====================================================
+           IMAGE PREVIEW
+        ===================================================== */
+
+        .preview-container {
+            margin-top: 22px;
+            display: none;
+        }
+
+        #image-preview {
+            display: block;
+
+            max-width: 100%;
+            width: auto;
+            max-height: 330px;
+
+            margin: 0 auto;
+
+            border-radius: 14px;
+            border: 1px solid #cbd5e1;
+
+            box-shadow:
+                0 8px 20px rgba(15, 23, 42, 0.10);
+        }
+
+        .preview-label {
+            margin-bottom: 9px;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        /* =====================================================
+           SCAN BUTTON
+        ===================================================== */
+
+        .scan-area {
+            text-align: center;
+            margin-top: 23px;
+        }
+
+        .primary-button {
+            border: none;
+
+            padding: 14px 28px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #1d4ed8
+                );
+
+            color: white;
+
+            border-radius: 11px;
+
+            font-size: 15px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 18px rgba(37, 99, 235, 0.24);
+
+            transition: 0.2s ease;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 11px 23px rgba(37, 99, 235, 0.30);
+        }
+
+        .primary-button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .scanning-message {
+            display: none;
+
+            margin-top: 14px;
+
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .scan-dot {
+            display: inline-block;
+            animation: pulse 1.1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.35;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* =====================================================
+           SUMMARY
+        ===================================================== */
+
+        .summary-section {
+            margin-bottom: 26px;
+        }
+
+        .summary-heading {
+            margin-bottom: 15px;
+
+            color: #172554;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 25px 0;
+        }
+
+        .summary-card {
+            position: relative;
+
+            background: white;
+
+            border-radius: 17px;
+
+            padding: 22px;
+
+            border: 1px solid #e2e8f0;
+
+            box-shadow:
+                0 8px 22px rgba(15, 23, 42, 0.06);
+
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: "";
+
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 4px;
+
+            background: #2563eb;
+        }
+
+        .summary-card.detected::before {
+            background: #16a34a;
+        }
+
+        .summary-card.manual::before {
+            background: #f59e0b;
+        }
+
+        .summary-card.failed::before {
+            background: #dc2626;
+        }
+
+        .summary-label {
+            color: #64748b;
+            font-size: 12px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            margin-bottom: 9px;
+        }
+
+        .summary-number {
+            color: #1e3a8a;
+
+            font-size: 32px;
+            font-weight: 900;
+
+            line-height: 1;
+        }
+
+        .summary-card.detected .summary-number {
+            color: #16a34a;
+        }
+
+        .summary-card.manual .summary-number {
+            color: #d97706;
+        }
+
+        .summary-card.failed .summary-number {
+            color: #dc2626;
+        }
+
+        /* =====================================================
+           OCR TEXT
+        ===================================================== */
+
+        .text-box {
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 13px;
+
+            padding: 20px;
+
+            color: #334155;
+
+            font-size: 14px;
+            line-height: 1.75;
+
+            text-align: left;
+
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .text-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .text-box::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* =====================================================
+           MANUAL REVIEW ALERT
+        ===================================================== */
+
+        .manual-review-box {
+            background: #fffbeb;
+            border: 1px solid #fbbf24;
+            border-left: 5px solid #f59e0b;
+            border-radius: 14px;
+            padding: 17px 20px;
+            margin-bottom: 26px;
+            color: #92400e;
+            box-shadow: 0 6px 18px rgba(245, 158, 11, 0.08);
+        }
+
+        .manual-review-box strong {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .manual-review-box p {
+            margin: 7px 0 0;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        /* =====================================================
+           PDF BUTTON
+        ===================================================== */
+
+        .report-area {
+            display: flex;
+            justify-content: flex-end;
+
+            margin-bottom: 25px;
+        }
+
+        .download-pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 12px 19px;
+
+    background: #0f172a;
+    color: white;
+
+    text-decoration: none;
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition: 0.2s ease;
+
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+.download-pdf-btn:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+}
+
+        /* =====================================================
+           RULE TABLE
+        ===================================================== */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+        }
+
+        table {
+            width: 100%;
+
+            min-width: 700px;
+
+            border-collapse: collapse;
+
+            background: white;
+        }
+
+        th {
+            background:
+                linear-gradient(
+                    135deg,
+                    #172554,
+                    #1e3a8a
+                );
+
+            color: white;
+
+            padding: 15px;
+
+            text-align: left;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            letter-spacing: 0.2px;
+        }
+
+        td {
+            padding: 14px 15px;
+
+            border-bottom: 1px solid #e2e8f0;
+
+            vertical-align: middle;
+
+            color: #334155;
+
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        tbody tr:hover {
+            background: #eff6ff;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rule-id {
+            color: #1e3a8a;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        /* =====================================================
+   STATUS BADGES
+===================================================== */
+
+.status-badge {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    letter-spacing: 0.2px;
+}
+
+
+/* GREEN — DETECTED */
+
+.status-badge.status-detected {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+
+    border: 1px solid #bbf7d0 !important;
+}
+
+.status-badge.status-manual {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fcd34d !important;
+}
+
+.status-badge.status-not {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fecaca !important;
+}
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+            text-align: center;
+
+            padding: 25px 15px 32px;
+
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+        .footer strong {
+            color: #334155;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .hero h1 {
+                font-size: 33px;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .navbar {
+                padding: 15px 5%;
+
+                justify-content: center;
+                text-align: center;
+            }
+
+            .brand-area {
+                justify-content: center;
+            }
+
+            .nav-right {
+                width: 100%;
+            }
+
+            .container {
+                width: 92%;
+                padding-top: 30px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .card-header {
+                padding: 20px 19px 14px;
+            }
+
+            .card-body {
+                padding: 0 19px 20px;
+            }
+
+            .upload-area {
+                padding: 28px 15px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 11px;
+            }
+
+            .summary-card {
+                padding: 18px 15px;
+            }
+
+            .summary-number {
+                font-size: 27px;
+            }
+
+            .report-area {
+                justify-content: stretch;
+            }
+
+            .download-pdf-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 430px) {
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 25px;
+            }
+
+            .brand {
+                font-size: 19px;
+            }
+
+            .nav-subtitle {
+                font-size: 11px;
+            }
+
+            .upload-icon {
+                width: 55px;
+                height: 55px;
+                font-size: 25px;
+            }
+
+            .primary-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <nav class="navbar">
+
+        <div class="brand-area">
+
+            <div class="brand-icon">
+                ⚖️
+            </div>
+
+            <div>
+                <div class="brand">
+                    Legal<span>Metrology</span>
+                </div>
+
+                <div class="nav-subtitle">
+                    Packaged Commodity Compliance Checking System
+                </div>
+            </div>
+
+        </div>
+
+        <div class="nav-right">
+            OCR • Rule Engine • Compliance Analysis
+        </div>
+
+    </nav>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="container">
+
+
+        <!-- =================================================
+             HERO
+        ================================================== -->
+
+        <section class="hero">
+
+            <div class="hero-badge">
+                COMPLIANCE VERIFICATION
+            </div>
+
+            <h1>
+                Packaged Commodity
+                <span>Compliance Scanner</span>
+            </h1>
+
+            <p>
+                Upload a product package or label image to extract
+                information using OCR and evaluate it against
+                the Legal Metrology compliance rules.
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             UPLOAD CARD
+        ================================================== -->
+
+        <section class="upload-card">
+    <h2>Upload Product Image</h2>
+
+    <div class="upload-area" id="upload-area">
+
+        <div class="upload-icon">📦</div>
+
+        <h3>Upload Product Package Image</h3>
+
+        <p>
+            Drag and drop an image here, or choose an image from your device.
+        </p>
+
+        <form id="scan-form"
+              action="/scan"
+              method="POST"
+              enctype="multipart/form-data">
+
+            <div class="file-upload">
+
+                <label for="image" class="file-button">
+                    Choose Product Image
+                </label>
+
+                <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept="image/*"
+                    required
+                >
+
+                <div id="file-name">
+                    No image selected
+                </div>
+
+            </div>
+
+                <img
+                    id="image-preview"
+                    src=""
+                    alt="Product Preview"
+                    style="display:none; max-width:350px; max-height:300px; margin:20px auto; border-radius:12px; border:1px solid #dbeafe;"
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="primary-button"
+                id="scan-button"
+                disabled
+            >
+                🔍 Scan Product
+            </button>
+
+            <!-- Processing Animation -->
+
+            <div
+                class="scan-status"
+                id="scan-status"
+            >
+
+                <div class="scan-status-title">
+                    Processing Product...
+                </div>
+
+                <div class="scan-process">
+
+                    <div
+                        class="process-step"
+                        id="process-image"
+                    >
+                        <div class="process-icon">
+                            🖼️
+                        </div>
+
+                        <div class="process-name">
+                            Image
+                        </div>
+                    </div>
+
+                    <div
+                        class="process-line"
+                        id="line-image"
+                    ></div>
+
+                    <div
+                        class="process-step"
+                        id="process-ocr"
+                    >
+                        <div class="process-icon">
+                            🔎
+                        </div>
+
+                        <div class="process-name">
+                            OCR
+                        </div>
+                    </div>
+
+                    <div
+                        class="process-line"
+                        id="line-ocr"
+                    ></div>
+
+                    <div
+                        class="process-step"
+                        id="process-rules"
+                    >
+                        <div class="process-icon">
+                            📋
+                        </div>
+
+                        <div class="process-name">
+                            34 Rules
+                        </div>
+                    </div>
+
+                    <div
+                        class="process-line"
+                        id="line-rules"
+                    ></div>
+
+                    <div
+                        class="process-step"
+                        id="process-complete"
+                    >
+                        <div class="process-icon">
+                            ✓
+                        </div>
+
+                        <div class="process-name">
+                            Complete
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+</section>
+
+        <!-- =================================================
+             RESULTS
+        ================================================== -->
+
+        {% if summary %}
+
+        <!-- Compliance Summary -->
+
+        <section class="summary-section">
+
+            <div class="summary-heading">
+                Compliance Summary
+            </div>
+
+            <div class="summary-grid">
+
+
+                <!-- Total -->
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Total Rules
+                    </div>
+
+                    <div class="summary-number">
+                        {{ summary.total }}
+                    </div>
+
+                </div>
+
+
+                <!-- Detected -->
+
+                <div class="summary-card detected">
+
+                    <div class="summary-label">
+                        Detected
+                    </div>
+
+                    <div class="summary-number">
+                        {{ summary.detected }}
+                    </div>
+
+                </div>
+
+
+                <!-- Manual Review -->
+
+                <div class="summary-card manual">
+
+                    <div class="summary-label">
+                        Manual Review
+                    </div>
+
+                    <div class="summary-number">
+                        {{ summary.manual_review }}
+                    </div>
+
+                </div>
+
+
+                <!-- Not Detected -->
+
+                <div class="summary-card failed">
+
+                    <div class="summary-label">
+                        Not Detected
+                    </div>
+
+                    <div class="summary-number">
+                        {{ summary.not_detected }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             MANUAL REVIEW MESSAGE
+        ================================================== -->
+
+        {% if manual_review %}
+
+        <div class="manual-review-box">
+
+            <strong>
+                🟡 Manual Review Required
+            </strong>
+
+            <p>
+                Some information could not be reliably verified
+                automatically. The package should be reviewed
+                manually because the text may be blurred, curved,
+                damaged, or not clearly visible.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             OCR EXTRACTED TEXT
+        ================================================== -->
+
+        {% if extracted_text %}
+
+        <section class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        OCR Extracted Text
+                    </div>
+
+                    <div class="card-subtitle">
+                        Text detected from the uploaded package image.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="text-box">
+                    {{ extracted_text }}
+                </div>
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             COMPLIANCE RULE TABLE
+        ================================================== -->
+
+        {% if compliance_results %}
+
+        <section class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        34-Rule Compliance Results
+                    </div>
+
+                    <div class="card-subtitle">
+                        Detailed verification results for each
+                        compliance rule.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="table-wrapper">
+    <table>
+
+        <thead>
+            <tr>
+                <th style="width: 110px;">
+                    Rule ID
+                </th>
+
+                <th>
+                    Description / Field
+                </th>
+
+                <th style="width: 190px;">
+                    Status
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for result in compliance_results %}
+
+            <tr>
+
+                <td class="rule-id">
+                    {{ result.id }}
+                </td>
+
+                <td class="rule-description">
+                    {{ result.description or result.rule }}
+                </td>
+
+                <td>
+
+                {% if result.status == "Detected" %}
+
+    <span
+        style="
+            display: inline-block !important;
+            padding: 6px 12px !important;
+            border-radius: 999px !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            color: #166534 !important;
+            background-color: #dcfce7 !important;
+            border: 1px solid #86efac !important;
+            white-space: nowrap !important;
+        "
+    >
+        ● DETECTED
+    </span>
+
+{% elif result.status == "Manual Review Required" %}
+
+    <span
+        style="
+            display: inline-block !important;
+            padding: 6px 12px !important;
+            border-radius: 999px !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            color: #92400e !important;
+            background-color: #fef3c7 !important;
+            border: 1px solid #fbbf24 !important;
+            white-space: nowrap !important;
+        "
+    >
+        ● MANUAL REVIEW
+    </span>
+
+{% else %}
+
+    <span
+        style="
+            display: inline-block !important;
+            padding: 6px 12px !important;
+            border-radius: 999px !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            color: #991b1b !important;
+            background-color: #fee2e2 !important;
+            border: 1px solid #f87171 !important;
+            white-space: nowrap !important;
+        "
+    >
+        ● NOT DETECTED
+    </span>
+
+{% endif %} 
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endif %}
+
+
+<!-- =================================================
+     PDF REPORT
+================================================== -->
+
+{% if summary %}
+
+<div class="report-area">
+
+    <a
+        href="{{ url_for('download_pdf') }}"
+        class="download-pdf-btn"
+    >
+        📄 Generate Compliance Report
+    </a>
+
+</div>
+
+{% endif %}
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <strong>
+            Legal Metrology
+        </strong>
+
+        — AI-Assisted Packaged Commodity Compliance Checking System
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+const imageInput = document.getElementById("image");
+const uploadArea = document.getElementById("upload-area");
+const fileName = document.getElementById("file-name");
+const preview = document.getElementById("image-preview");
+const scanButton = document.getElementById("scan-button");
+const scanForm = document.getElementById("scan-form");
+
+const scanStatus = document.getElementById("scan-status");
+
+const processImage = document.getElementById("process-image");
+const processOCR = document.getElementById("process-ocr");
+const processRules = document.getElementById("process-rules");
+const processComplete = document.getElementById("process-complete");
+
+const lineImage = document.getElementById("line-image");
+const lineOCR = document.getElementById("line-ocr");
+const lineRules = document.getElementById("line-rules");
+
+
+// -----------------------------------------
+// File selection
+// -----------------------------------------
+
+imageInput.addEventListener("change", function () {
+
+    if (this.files && this.files.length > 0) {
+
+        const file = this.files[0];
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please select an image file.");
+            this.value = "";
+            return;
+        }
+
+        showSelectedImage(file);
+    }
+
+});
+
+
+// -----------------------------------------
+// Show selected image
+// -----------------------------------------
+
+function showSelectedImage(file) {
+
+    fileName.textContent = file.name;
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+
+        preview.src = event.target.result;
+        preview.style.display = "block";
+
+        scanButton.disabled = false;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+
+// -----------------------------------------
+// Drag and Drop
+// -----------------------------------------
+
+uploadArea.addEventListener("dragover", function (event) {
+
+    event.preventDefault();
+
+    uploadArea.classList.add("drag-active");
+
+});
+
+
+uploadArea.addEventListener("dragleave", function () {
+
+    uploadArea.classList.remove("drag-active");
+
+});
+
+
+uploadArea.addEventListener("drop", function (event) {
+
+    event.preventDefault();
+
+    uploadArea.classList.remove("drag-active");
+
+    const files = event.dataTransfer.files;
+
+    if (files.length === 0) {
+        return;
+    }
+
+    const file = files[0];
+
+    if (!file.type.startsWith("image/")) {
+
+        alert("Please drop an image file.");
+
+        return;
+    }
+
+    /*
+     * Put dropped file into the file input
+     * so Flask receives it normally.
+     */
+
+    const dataTransfer = new DataTransfer();
+
+    dataTransfer.items.add(file);
+
+    imageInput.files = dataTransfer.files;
+
+    showSelectedImage(file);
+
+});
+
+
+// -----------------------------------------
+// Reset processing animation
+// -----------------------------------------
+
+function resetProcess() {
+
+    processImage.classList.remove("active", "completed");
+    processOCR.classList.remove("active", "completed");
+    processRules.classList.remove("active", "completed");
+    processComplete.classList.remove("active", "completed");
+
+    lineImage.classList.remove("completed");
+    lineOCR.classList.remove("completed");
+    lineRules.classList.remove("completed");
+}
+
+
+// -----------------------------------------
+// Scan button
+// -----------------------------------------
+
+scanForm.addEventListener("submit", function () {
+
+    scanButton.disabled = true;
+
+    scanButton.textContent = "Processing...";
+
+    scanStatus.style.display = "block";
+
+    resetProcess();
+
+    /*
+     * Step 1 — Image Processing
+     */
+
+    processImage.classList.add("active");
+
+
+    setTimeout(function () {
+
+        processImage.classList.remove("active");
+
+        processImage.classList.add("completed");
+
+        lineImage.classList.add("completed");
+
+        /*
+         * Step 2 — OCR
+         */
+
+        processOCR.classList.add("active");
+
+
+    }, 1000);
+
+
+    setTimeout(function () {
+
+        processOCR.classList.remove("active");
+
+        processOCR.classList.add("completed");
+
+        lineOCR.classList.add("completed");
+
+        /*
+         * Step 3 — 34 Rule Checking
+         */
+
+        processRules.classList.add("active");
+
+
+    }, 2200);
+
+
+    setTimeout(function () {
+
+        processRules.classList.remove("active");
+
+        processRules.classList.add("completed");
+
+        lineRules.classList.add("completed");
+
+        /*
+         * Step 4 — Complete
+         */
+
+        processComplete.classList.add("active");
+
+        processComplete.classList.remove("active");
+
+        processComplete.classList.add("completed");
+
+    }, 3400);
+
+});
+
+</script>
+
+</body>
+</html>

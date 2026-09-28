@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Compliance Dashboard | Legal Metrology</title>
+
+    <style>
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #0b1f3a;
+            --navy-2: #102a43;
+            --blue: #1769aa;
+            --blue-light: #eaf4ff;
+
+            --green: #16a34a;
+            --green-bg: #dcfce7;
+
+            --yellow: #d99a00;
+            --yellow-bg: #fff7d6;
+
+            --red: #dc2626;
+            --red-bg: #fee2e2;
+
+            --background: #f3f7fb;
+            --card: #ffffff;
+            --border: #e3eaf2;
+
+            --text: #172033;
+            --muted: #64748b;
+            --light-text: #94a3b8;
+
+            --shadow: 0 8px 28px rgba(15, 35, 60, 0.06);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                "Segoe UI",
+                Inter,
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(23, 105, 170, 0.07),
+                    transparent 30%
+                ),
+                var(--background);
+
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================================================
+           NAVBAR
+        ========================================================= */
+
+        .navbar {
+            height: 76px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #081a31,
+                    #0b2747
+                );
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 5.5%;
+
+            box-shadow:
+                0 4px 18px rgba(0, 0, 0, 0.12);
+
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1976c8,
+                    #12528e
+                );
+
+            font-size: 21px;
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, 0.18);
+        }
+
+        .brand-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+        }
+
+        .brand-subtitle {
+            font-size: 10px;
+            color: #b9c9dc;
+            margin-top: 3px;
+            letter-spacing: 0.25px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            padding: 10px 15px;
+
+            border-radius: 9px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            color: white;
+
+            border: 1px solid rgba(255,255,255,0.18);
+
+            background: rgba(255,255,255,0.08);
+
+            transition: 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.16);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn.primary {
+            background: #1769aa;
+            border-color: #1769aa;
+        }
+
+        .nav-btn.primary:hover {
+            background: #2182ca;
+        }
+
+
+        /* =========================================================
+           PAGE
+        ========================================================= */
+
+        .page {
+            width: 90%;
+            max-width: 1450px;
+
+            margin: 36px auto 65px;
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            background: var(--blue-light);
+            color: var(--blue);
+
+            font-size: 10px;
+            font-weight: 700;
+
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+
+            margin-bottom: 12px;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: var(--blue);
+        }
+
+        .page-heading h1 {
+            font-size: 31px;
+            color: var(--navy-2);
+            letter-spacing: -0.5px;
+        }
+
+        .page-heading p {
+            margin-top: 8px;
+
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================================
+           SUMMARY CARDS
+        ========================================================= */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 17px;
+
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            position: relative;
+
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            padding: 21px;
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 13px 32px rgba(15, 35, 60, 0.09);
+        }
+
+        .summary-card::after {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 4px;
+            height: 100%;
+
+            background: var(--blue);
+        }
+
+        .summary-card.detected::after {
+            background: var(--green);
+        }
+
+        .summary-card.review::after {
+            background: #eab308;
+        }
+
+        .summary-card.not-detected::after {
+            background: var(--red);
+        }
+
+        .summary-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .summary-icon {
+            width: 30px;
+            height: 30px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: var(--blue-light);
+
+            color: var(--blue);
+
+            font-size: 14px;
+        }
+
+        .summary-card.detected .summary-icon {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .summary-card.review .summary-icon {
+            background: var(--yellow-bg);
+            color: var(--yellow);
+        }
+
+        .summary-card.not-detected .summary-icon {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .summary-value {
+            margin-top: 13px;
+
+            font-size: 31px;
+
+            font-weight: 750;
+
+            color: var(--navy-2);
+        }
+
+        .summary-description {
+            margin-top: 4px;
+
+            color: var(--light-text);
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           MAIN CARDS
+        ========================================================= */
+
+        .main-grid {
+            display: grid;
+
+            grid-template-columns:
+                1.12fr 0.88fr;
+
+            gap: 20px;
+
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 16px;
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+        }
+
+        .card-header {
+            min-height: 62px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 15px 21px;
+
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .card-title-area {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .card-title-icon {
+            width: 32px;
+            height: 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: var(--blue-light);
+            color: var(--blue);
+
+            font-size: 14px;
+        }
+
+        .card-header h2 {
+            font-size: 15px;
+            color: var(--navy-2);
+        }
+
+        .card-header span {
+            font-size: 10px;
+            color: var(--light-text);
+
+            background: #f8fafc;
+
+            padding: 5px 8px;
+
+            border-radius: 6px;
+        }
+
+        .card-body {
+            padding: 22px;
+        }
+
+
+        /* =========================================================
+           COMPLIANCE OVERVIEW
+        ========================================================= */
+
+        .overview {
+            display: flex;
+            align-items: center;
+            gap: 38px;
+        }
+
+        .score-wrapper {
+            position: relative;
+
+            width: 178px;
+            height: 178px;
+
+            flex-shrink: 0;
+        }
+
+        .score-circle {
+            width: 178px;
+            height: 178px;
+
+            border-radius: 50%;
+
+            background:
+                conic-gradient(
+                    var(--green)
+                    0deg
+                    calc(
+                        {{ summary.detected }}
+                        / {{ summary.total if summary.total else 1 }}
+                        * 360deg
+                    ),
+
+                    #eab308
+                    0deg
+                    calc(
+                        (
+                            {{ summary.detected + summary.manual_review }}
+                        )
+                        / {{ summary.total if summary.total else 1 }}
+                        * 360deg
+                    ),
+
+                    #dc2626 0deg
+                );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-inner {
+            width: 132px;
+            height: 132px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            box-shadow:
+                inset 0 0 15px rgba(15,35,60,0.04);
+        }
+
+        .score-number {
+            font-size: 29px;
+            font-weight: 750;
+            color: var(--navy-2);
+        }
+
+        .score-label {
+            margin-top: 2px;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .legend {
+            width: 100%;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 14px;
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding-bottom: 11px;
+
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .legend-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .legend-left {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .legend-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.green {
+            background: var(--green);
+        }
+
+        .legend-dot.yellow {
+            background: #eab308;
+        }
+
+        .legend-dot.red {
+            background: var(--red);
+        }
+
+        .legend-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--navy-2);
+        }
+
+
+        /* =========================================================
+           INSPECTION DETAILS
+        ========================================================= */
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-row {
+            min-height: 43px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .info-value {
+            color: var(--navy-2);
+
+            font-size: 12px;
+
+            font-weight: 650;
+
+            text-align: right;
+        }
+
+        .completed {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+
+            color: var(--green);
+        }
+
+
+        /* =========================================================
+           OCR CARD
+        ========================================================= */
+
+        .ocr-card {
+            margin-bottom: 20px;
+        }
+
+        .ocr-tools {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .ocr-tag {
+            padding: 5px 9px;
+
+            border-radius: 6px;
+
+            background: #f1f5f9;
+
+            color: #64748b;
+
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            border: 1px solid var(--border);
+
+            background: white;
+
+            color: var(--blue);
+
+            padding: 5px 9px;
+
+            border-radius: 6px;
+
+            font-size: 10px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--blue-light);
+        }
+
+        .ocr-box {
+            position: relative;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #f8fafc,
+                    #f5f8fb
+                );
+
+            border: 1px solid #dfe7ef;
+
+            border-radius: 11px;
+
+            padding: 18px;
+
+            min-height: 130px;
+            max-height: 260px;
+
+            overflow-y: auto;
+
+            white-space: pre-wrap;
+            word-break: break-word;
+
+            line-height: 1.75;
+
+            font-family:
+                Consolas,
+                "Courier New",
+                monospace;
+
+            font-size: 12px;
+
+            color: #334155;
+        }
+
+        .ocr-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ocr-box::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+
+        /* =========================================================
+           REVIEW ALERT
+        ========================================================= */
+
+        .review-alert {
+            display: flex;
+            align-items: flex-start;
+
+            gap: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fffdf2,
+                    #fff9df
+                );
+
+            border: 1px solid #f4dc80;
+
+            border-left: 5px solid #eab308;
+
+            border-radius: 11px;
+
+            padding: 16px 18px;
+
+            margin-bottom: 20px;
+
+            color: #713f12;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+        }
+
+        .review-icon {
+            width: 29px;
+            height: 29px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: #fef3c7;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
+
+        .results-card {
+            overflow: hidden;
+        }
+
+        .results-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rule-count {
+            background: var(--blue-light) !important;
+            color: var(--blue) !important;
+            font-weight: 700;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 620px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 720px;
+
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+
+            background: var(--navy);
+        }
+
+        th {
+            padding: 13px 17px;
+
+            text-align: left;
+
+            color: white;
+
+            font-size: 10px;
+
+            letter-spacing: 0.7px;
+
+            text-transform: uppercase;
+
+            font-weight: 700;
+        }
+
+        td {
+            padding: 13px 17px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            font-size: 12px;
+
+            color: #475569;
+
+            background: white;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: #f9fbfd;
+        }
+
+        tbody tr:hover td {
+            background: #f0f7fd;
+        }
+
+        .rule-id {
+            color: var(--blue);
+
+            font-weight: 750;
+
+            font-family: Consolas, monospace;
+
+            font-size: 12px;
+        }
+
+        .rule-description {
+            color: #334155;
+            line-height: 1.45;
+        }
+
+        /* =========================================================
+           STATUS BADGES
+        ========================================================= */
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            padding: 6px 10px;
+
+            border-radius: 999px;
+
+            font-size: 9px;
+
+            font-weight: 750;
+
+            letter-spacing: 0.3px;
+
+            white-space: nowrap;
+        }
+
+        .status-detected {
+            color: #166534;
+            background: var(--green-bg);
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-manual {
+            color: #92400e;
+            background: var(--yellow-bg);
+            border: 1px solid #fde68a;
+        }
+
+        .status-not-detected {
+            color: #991b1b;
+            background: var(--red-bg);
+            border: 1px solid #fecaca;
+        }
+
+
+        /* =========================================================
+           REPORT ACTION
+        ========================================================= */
+
+        .report-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-top: 20px;
+
+            padding: 20px 22px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            box-shadow: var(--shadow);
+        }
+
+        .report-text h3 {
+            font-size: 14px;
+            color: var(--navy-2);
+        }
+
+        .report-text p {
+            margin-top: 4px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+        .report-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0b1f3a,
+                    #1769aa
+                );
+
+            color: white;
+
+            padding: 12px 18px;
+
+            border-radius: 9px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            transition: 0.2s ease;
+
+            box-shadow:
+                0 6px 15px rgba(11,31,58,0.18);
+        }
+
+        .report-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 9px 20px rgba(11,31,58,0.23);
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+            text-align: center;
+
+            margin-top: 38px;
+
+            color: #94a3b8;
+
+            font-size: 10px;
+
+            line-height: 1.7;
+        }
+
+        .footer-main {
+            font-weight: 600;
+            color: #64748b;
+        }
+
+
+        /* =========================================================
+           ANIMATION
+        ========================================================= */
+
+        .fade-in {
+            animation: fadeIn 0.55s ease both;
+        }
+
+        .delay-1 {
+            animation-delay: 0.05s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.10s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.15s;
+        }
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1050px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                height: auto;
+
+                padding: 14px 5%;
+
+                gap: 14px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+            .nav-right {
+                width: 100%;
+            }
+
+            .nav-btn {
+                flex: 1;
+            }
+
+            .page {
+                width: 94%;
+                margin-top: 25px;
+            }
+
+            .page-heading h1 {
+                font-size: 25px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .overview {
+                flex-direction: column;
+                gap: 25px;
+            }
+
+            .score-wrapper {
+                margin: auto;
+            }
+
+            .legend {
+                width: 100%;
+            }
+
+            .report-area {
+                flex-direction: column;
+                align-items: stretch;
+
+                gap: 15px;
+            }
+
+            .report-btn {
+                width: 100%;
+            }
+
+            .card-header {
+                padding: 14px 16px;
+            }
+
+            .card-body {
+                padding: 17px;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .brand-title {
+                font-size: 14px;
+            }
+
+            .brand-subtitle {
+                font-size: 9px;
+            }
+
+            .page-heading h1 {
+                font-size: 23px;
+            }
+
+            .summary-card {
+                padding: 18px;
+            }
+
+            .summary-value {
+                font-size: 28px;
+            }
+
+            .score-circle,
+            .score-wrapper {
+                width: 155px;
+                height: 155px;
+            }
+
+            .score-inner {
+                width: 115px;
+                height: 115px;
+            }
+
+            .score-number {
+                font-size: 25px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================== -->
+
+<nav class="navbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            ⚖
+        </div>
+
+        <div>
+            <div class="brand-title">
+                LEGAL METROLOGY
+            </div>
+
+            <div class="brand-subtitle">
+                Packaged Commodity Compliance Checking System
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="nav-right">
+
+        <a href="/" class="nav-btn">
+            ← New Scan
+        </a>
+
+        <a href="/download_pdf" class="nav-btn primary">
+            📄 PDF Report
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================== -->
+
+<main class="page">
+
+
+    <!-- PAGE TITLE -->
+
+    <section class="page-heading fade-in">
+
+        <div class="eyebrow">
+            Compliance Analysis
+        </div>
+
+        <h1>
+            Compliance Dashboard
+        </h1>
+
+        <p>
+            AI-assisted inspection overview for packaged commodity declarations.
+        </p>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SUMMARY CARDS
+    ====================================================== -->
+
+    <section class="summary-grid">
+
+
+        <!-- TOTAL -->
+
+        <div class="summary-card fade-in">
+
+            <div class="summary-top">
+
+                <div class="summary-label">
+                    Total Rules
+                </div>
+
+                <div class="summary-icon">
+                    ☷
+                </div>
+
+            </div>
+
+            <div class="summary-value">
+                {{ summary.total }}
+            </div>
+
+            <div class="summary-description">
+                Compliance rules evaluated
+            </div>
+
+        </div>
+
+
+        <!-- DETECTED -->
+
+        <div class="summary-card detected fade-in delay-1">
+
+            <div class="summary-top">
+
+                <div class="summary-label">
+                    Detected
+                </div>
+
+                <div class="summary-icon">
+                    ✓
+                </div>
+
+            </div>
+
+            <div class="summary-value">
+                {{ summary.detected }}
+            </div>
+
+            <div class="summary-description">
+                Required information detected
+            </div>
+
+        </div>
+
+
+        <!-- MANUAL REVIEW -->
+
+        <div class="summary-card review fade-in delay-2">
+
+            <div class="summary-top">
+
+                <div class="summary-label">
+                    Manual Review
+                </div>
+
+                <div class="summary-icon">
+                    !
+                </div>
+
+            </div>
+
+            <div class="summary-value">
+                {{ summary.manual_review }}
+            </div>
+
+            <div class="summary-description">
+                Officer verification required
+            </div>
+
+        </div>
+
+
+        <!-- NOT DETECTED -->
+
+        <div class="summary-card not-detected fade-in delay-3">
+
+            <div class="summary-top">
+
+                <div class="summary-label">
+                    Not Detected
+                </div>
+
+                <div class="summary-icon">
+                    ×
+                </div>
+
+            </div>
+
+            <div class="summary-value">
+                {{ summary.not_detected }}
+            </div>
+
+            <div class="summary-description">
+                Information not detected
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         OVERVIEW + INSPECTION DETAILS
+    ====================================================== -->
+
+    <section class="main-grid">
+
+
+        <!-- COMPLIANCE OVERVIEW -->
+
+        <div class="card fade-in">
+
+            <div class="card-header">
+
+                <div class="card-title-area">
+
+                    <div class="card-title-icon">
+                        ◔
+                    </div>
+
+                    <h2>
+                        Compliance Overview
+                    </h2>
+
+                </div>
+
+                <span>
+                    34 Rules
+                </span>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="overview">
+
+
+                    <!-- CIRCLE -->
+
+                    <div class="score-wrapper">
+
+                        <div class="score-circle">
+
+                            <div class="score-inner">
+
+                                <div class="score-number">
+
+                                    {% if summary.total %}
+                                        {{ ((summary.detected / summary.total) * 100)|round|int }}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
+
+                                </div>
+
+                                <div class="score-label">
+                                    Detected
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LEGEND -->
+
+                    <div class="legend">
+
+
+                        <div class="legend-row">
+
+                            <div class="legend-left">
+
+                                <span class="legend-dot green"></span>
+
+                                <span>
+                                    Detected
+                                </span>
+
+                            </div>
+
+                            <span class="legend-value">
+                                {{ summary.detected }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="legend-row">
+
+                            <div class="legend-left">
+
+                                <span class="legend-dot yellow"></span>
+
+                                <span>
+                                    Manual Review
+                                </span>
+
+                            </div>
+
+                            <span class="legend-value">
+                                {{ summary.manual_review }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="legend-row">
+
+                            <div class="legend-left">
+
+                                <span class="legend-dot red"></span>
+
+                                <span>
+                                    Not Detected
+                                </span>
+
+                            </div>
+
+                            <span class="legend-value">
+                                {{ summary.not_detected }}
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- INSPECTION DETAILS -->
+
+        <div class="card fade-in delay-1">
+
+            <div class="card-header">
+
+                <div class="card-title-area">
+
+                    <div class="card-title-icon">
+                        ⓘ
+                    </div>
+
+                    <h2>
+                        Inspection Details
+                    </h2>
+
+                </div>
+
+                <span>
+                    Current Scan
+                </span>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="info-list">
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Inspection Type
+                        </span>
+
+                        <span class="info-value">
+                            Packaged Commodity
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Analysis Method
+                        </span>
+
+                        <span class="info-value">
+                            OCR + Rule Engine
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            OCR Engine
+                        </span>
+
+                        <span class="info-value">
+                            Tesseract OCR
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Rules Evaluated
+                        </span>
+
+                        <span class="info-value">
+                            {{ summary.total }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Manual Verification
+                        </span>
+
+                        <span class="info-value">
+                            {{ summary.manual_review }} Rules
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Analysis Status
+                        </span>
+
+                        <span class="info-value completed">
+                            ● Completed
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         OCR TEXT
+    ====================================================== -->
+
+    <section class="card ocr-card fade-in">
+
+
+        <div class="card-header">
+
+            <div class="card-title-area">
+
+                <div class="card-title-icon">
+                    Aa
+                </div>
+
+                <h2>
+                    OCR Extracted Text
+                </h2>
+
+            </div>
+
+
+            <div class="ocr-tools">
+
+                <span class="ocr-tag">
+                    TESSERACT OCR
+                </span>
+
+                <button
+                    type="button"
+                    class="copy-btn"
+                    onclick="copyOCR()"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div
+                class="ocr-box"
+                id="ocrText"
+            >{{ extracted_text }}</div>
+
+        </div>
+
+    </section>
+
+   <!-- =====================================================
+     MANUAL REVIEW ALERT
+====================================================== -->
+
+{% if summary.manual_review > 0 %}
+
+<div class="review-alert fade-in">
+
+    <div class="review-icon">
+        ⚠
+    </div>
+
+    <div>
+        <strong>Manual Review Required</strong>
+        <br>
+        {{ summary.manual_review }}
+        rule(s) require manual verification by an authorized officer.
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<!-- =====================================================
+     34 RULE COMPLIANCE RESULTS
+====================================================== -->
+
+<section class="card results-card fade-in">
+
+    <div class="card-header">
+
+        <div class="card-title-area">
+
+            <div class="card-title-icon">
+                ☷
+            </div>
+
+            <h2>34-Rule Compliance Results</h2>
+
+        </div>
+
+        <div class="results-header-right">
+
+            <span class="rule-count">
+                {{ summary.total }} Rules
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        RULE ID
+                    </th>
+
+                    <th>
+                        DESCRIPTION / FIELD
+                    </th>
+
+                    <th>
+                        STATUS
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for result in compliance_results %}
+
+                <tr>
+
+                    <td class="rule-id">
+                        {{ result.id }}
+                    </td>
+
+
+                    <td>
+                        {{ result.description or result.rule }}
+                    </td>
+
+
+                    <td>
+
+                        {% if result.status == "Detected" %}
+
+                        <span class="status-badge status-detected">
+                            ● DETECTED
+                        </span>
+
+
+                        {% elif result.status == "Manual Review Required" %}
+
+                        <span class="status-badge status-manual">
+                            ● MANUAL REVIEW
+                        </span>
+
+
+                        {% else %}
+
+                        <span class="status-badge status-not-detected">
+                            ● NOT DETECTED
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+    <!-- =====================================================
+         REPORT
+    ====================================================== -->
+
+    <section class="report-area fade-in">
+
+
+        <div class="report-text">
+
+            <h3>
+                Compliance Report
+            </h3>
+
+            <p>
+                Generate a PDF report containing the complete compliance analysis.
+            </p>
+
+        </div>
+
+
+        <a
+            href="/download_pdf"
+            class="pdf-btn"
+        >
+            📄 Download PDF Report
+        </a>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <div class="footer-main">
+            Legal Metrology Compliance Checking System
+        </div>
+
+        OCR • Rule Engine • Compliance Analysis
+
+    </footer>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+    function copyOCR() {
+
+        const text =
+            document.getElementById("ocrText").innerText;
+
+        navigator.clipboard.writeText(text)
+            .then(() => {
+
+                const button =
+                    document.querySelector(".copy-btn");
+
+                const oldText =
+                    button.innerText;
+
+                button.innerText = "Copied ✓";
+
+                setTimeout(() => {
+                    button.innerText = oldText;
+                }, 1500);
+
+            })
+            .catch(() => {
+
+                alert("Unable to copy OCR text.");
+
+            });
+
+    }
+
+</script>
+
+
+</body>
+</html>
